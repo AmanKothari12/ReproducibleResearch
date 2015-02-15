@@ -1,5 +1,5 @@
-Reproducible Research: Assignment 1
-===================================
+Reproducible Research: Peer Assessment 1
+========================================
 
 ### Basic settings
 
@@ -12,21 +12,54 @@ options(scipen = 1)  # Turn off scientific notations for numbers
 
 ```r
 unzip("activity.zip")
+```
+
+```
+## Warning in unzip("activity.zip"): error 1 in extracting from zip file
+```
+
+```r
 data <- read.csv("activity.csv", colClasses = c("integer", "Date", "factor"))
+```
+
+```
+## Warning in file(file, "rt"): cannot open file 'activity.csv': No such file
+## or directory
+```
+
+```
+## Error in file(file, "rt"): cannot open the connection
+```
+
+```r
 data$month <- as.numeric(format(data$date, "%m"))
+```
+
+```
+## Error in data$date: object of type 'closure' is not subsettable
+```
+
+```r
 noNA <- na.omit(data)
 rownames(noNA) <- 1:nrow(noNA)
+```
+
+```
+## Error in 1:nrow(noNA): argument of length 0
+```
+
+```r
 head(noNA)
 ```
 
 ```
-##   steps       date interval month
-## 1     0 2012-10-02        0    10
-## 2     0 2012-10-02        5    10
-## 3     0 2012-10-02       10    10
-## 4     0 2012-10-02       15    10
-## 5     0 2012-10-02       20    10
-## 6     0 2012-10-02       25    10
+##                                                                      
+## 1 function (..., list = character(), package = NULL, lib.loc = NULL, 
+## 2     verbose = getOption("verbose"), envir = .GlobalEnv)            
+## 3 {                                                                  
+## 4     fileExt <- function(x) {                                       
+## 5         db <- grepl("\\\\.[^.]+\\\\.(gz|bz2|xz)$", x)              
+## 6         ans <- sub(".*\\\\.", "", x)
 ```
 
 ```r
@@ -34,15 +67,11 @@ dim(noNA)
 ```
 
 ```
-## [1] 15264     4
+## NULL
 ```
 
 ```r
 library(ggplot2)
-```
-
-```
-## Warning: package 'ggplot2' was built under R version 3.1.2
 ```
 
 
@@ -55,7 +84,9 @@ For this part of the assignment, you can ignore the missing values in the datase
 ggplot(noNA, aes(date, steps)) + geom_bar(stat = "identity", colour = "green", fill = "green", width = 0.7) + facet_grid(. ~ month, scales = "free") + labs(title = "Histogram of Total Number of Steps Taken Each Day", x = "Date", y = "Total number of steps")
 ```
 
-![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png) 
+```
+## Error: ggplot2 doesn't know how to deal with data of class function
+```
 
 * Calculate and report the mean and median total number of steps taken per day
 
@@ -63,11 +94,18 @@ Mean total number of steps taken per day:
 
 ```r
 totalSteps <- aggregate(noNA$steps, list(Date = noNA$date), FUN = "sum")$x
+```
+
+```
+## Error in noNA$steps: object of type 'closure' is not subsettable
+```
+
+```r
 mean(totalSteps)
 ```
 
 ```
-## [1] 10766.19
+## Error in mean(totalSteps): object 'totalSteps' not found
 ```
 Median total number of steps taken per day:
 
@@ -76,7 +114,7 @@ median(totalSteps)
 ```
 
 ```
-## [1] 10765
+## Error in median(totalSteps): object 'totalSteps' not found
 ```
 
 ### What is the average daily activity pattern?
@@ -85,12 +123,27 @@ median(totalSteps)
 
 ```r
 avgSteps <- aggregate(noNA$steps, list(interval = as.numeric(as.character(noNA$interval))), FUN = "mean")
-names(avgSteps)[2] <- "meanOfSteps"
+```
 
+```
+## Error in noNA$steps: object of type 'closure' is not subsettable
+```
+
+```r
+names(avgSteps)[2] <- "meanOfSteps"
+```
+
+```
+## Error in names(avgSteps)[2] <- "meanOfSteps": object 'avgSteps' not found
+```
+
+```r
 ggplot(avgSteps, aes(interval, meanOfSteps)) + geom_line(color = "green", size = 0.8) + labs(title = "Time Series Plot of the 5-minute Interval", x = "5-minute intervals", y = "Average Number of Steps Taken")
 ```
 
-![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-1.png) 
+```
+## Error in ggplot(avgSteps, aes(interval, meanOfSteps)): object 'avgSteps' not found
+```
 
 * Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
@@ -99,8 +152,7 @@ avgSteps[avgSteps$meanOfSteps == max(avgSteps$meanOfSteps), ]
 ```
 
 ```
-##     interval meanOfSteps
-## 104      835    206.1698
+## Error in eval(expr, envir, enclos): object 'avgSteps' not found
 ```
 
 ### Imputing missing values
@@ -112,7 +164,12 @@ sum(is.na(data))
 ```
 
 ```
-## [1] 2304
+## Warning in is.na(data): is.na() applied to non-(list or vector) of type
+## 'closure'
+```
+
+```
+## [1] 0
 ```
 
 * Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
@@ -129,22 +186,33 @@ for (i in 1:nrow(newData)) {
         newData$steps[i] <- avgSteps[which(newData$interval[i] == avgSteps$interval), ]$meanOfSteps
     }
 }
+```
 
+```
+## Error in 1:nrow(newData): argument of length 0
+```
+
+```r
 head(newData)
 ```
 
 ```
-##       steps       date interval month
-## 1 1.7169811 2012-10-01        0    10
-## 2 0.3396226 2012-10-01        5    10
-## 3 0.1320755 2012-10-01       10    10
-## 4 0.1509434 2012-10-01       15    10
-## 5 0.0754717 2012-10-01       20    10
-## 6 2.0943396 2012-10-01       25    10
+##                                                                      
+## 1 function (..., list = character(), package = NULL, lib.loc = NULL, 
+## 2     verbose = getOption("verbose"), envir = .GlobalEnv)            
+## 3 {                                                                  
+## 4     fileExt <- function(x) {                                       
+## 5         db <- grepl("\\\\.[^.]+\\\\.(gz|bz2|xz)$", x)              
+## 6         ans <- sub(".*\\\\.", "", x)
 ```
 
 ```r
 sum(is.na(newData))
+```
+
+```
+## Warning in is.na(newData): is.na() applied to non-(list or vector) of type
+## 'closure'
 ```
 
 ```
@@ -161,7 +229,9 @@ ggplot(newData, aes(date, steps)) + geom_bar(stat = "identity",
                                              width = 0.7) + facet_grid(. ~ month, scales = "free") + labs(title = "Histogram of Total Number of Steps Taken Each Day (no missing data)", x = "Date", y = "Total number of steps")
 ```
 
-![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10-1.png) 
+```
+## Error: ggplot2 doesn't know how to deal with data of class function
+```
 
 * Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
 
@@ -171,33 +241,68 @@ Mean total number of steps taken per day:
 newTotalSteps <- aggregate(newData$steps, 
                            list(Date = newData$date), 
                            FUN = "sum")$x
+```
+
+```
+## Error in newData$steps: object of type 'closure' is not subsettable
+```
+
+```r
 newMean <- mean(newTotalSteps)
+```
+
+```
+## Error in mean(newTotalSteps): object 'newTotalSteps' not found
+```
+
+```r
 newMean
 ```
 
 ```
-## [1] 10766.19
+## Error in eval(expr, envir, enclos): object 'newMean' not found
 ```
 Median total number of steps taken per day:
 
 ```r
 newMedian <- median(newTotalSteps)
+```
+
+```
+## Error in median(newTotalSteps): object 'newTotalSteps' not found
+```
+
+```r
 newMedian
 ```
 
 ```
-## [1] 10766.19
+## Error in eval(expr, envir, enclos): object 'newMedian' not found
 ```
 Compare them with the two before imputing missing data:
 
 ```r
 oldMean <- mean(totalSteps)
+```
+
+```
+## Error in mean(totalSteps): object 'totalSteps' not found
+```
+
+```r
 oldMedian <- median(totalSteps)
+```
+
+```
+## Error in median(totalSteps): object 'totalSteps' not found
+```
+
+```r
 newMean - oldMean
 ```
 
 ```
-## [1] 0
+## Error in eval(expr, envir, enclos): object 'newMean' not found
 ```
 
 ```r
@@ -205,7 +310,7 @@ newMedian - oldMedian
 ```
 
 ```
-## [1] 1.188679
+## Error in eval(expr, envir, enclos): object 'newMedian' not found
 ```
 So, after imputing the missing data, the new mean of total steps taken per day is the same as that of the old mean; the new median of total steps taken per day is greater than that of the old median.
 
@@ -219,23 +324,29 @@ head(newData)
 ```
 
 ```
-##       steps       date interval month
-## 1 1.7169811 2012-10-01        0    10
-## 2 0.3396226 2012-10-01        5    10
-## 3 0.1320755 2012-10-01       10    10
-## 4 0.1509434 2012-10-01       15    10
-## 5 0.0754717 2012-10-01       20    10
-## 6 2.0943396 2012-10-01       25    10
+##                                                                      
+## 1 function (..., list = character(), package = NULL, lib.loc = NULL, 
+## 2     verbose = getOption("verbose"), envir = .GlobalEnv)            
+## 3 {                                                                  
+## 4     fileExt <- function(x) {                                       
+## 5         db <- grepl("\\\\.[^.]+\\\\.(gz|bz2|xz)$", x)              
+## 6         ans <- sub(".*\\\\.", "", x)
 ```
 
 ```r
 newData$weekdays <- factor(format(newData$date, "%A"))
+```
+
+```
+## Error in newData$date: object of type 'closure' is not subsettable
+```
+
+```r
 levels(newData$weekdays)
 ```
 
 ```
-## [1] "Friday"    "Monday"    "Saturday"  "Sunday"    "Thursday"  "Tuesday"  
-## [7] "Wednesday"
+## Error in newData$weekdays: object of type 'closure' is not subsettable
 ```
 
 ```r
@@ -243,11 +354,18 @@ levels(newData$weekdays) <- list(weekday = c("Monday", "Tuesday",
                                              "Wednesday", 
                                              "Thursday", "Friday"),
                                  weekend = c("Saturday", "Sunday"))
+```
+
+```
+## Error in `*tmp*`$weekdays: object of type 'closure' is not subsettable
+```
+
+```r
 levels(newData$weekdays)
 ```
 
 ```
-## [1] "weekday" "weekend"
+## Error in newData$weekdays: object of type 'closure' is not subsettable
 ```
 
 ```r
@@ -255,9 +373,7 @@ table(newData$weekdays)
 ```
 
 ```
-## 
-## weekday weekend 
-##   12960    4608
+## Error in newData$weekdays: object of type 'closure' is not subsettable
 ```
 
 * Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis).
@@ -268,12 +384,28 @@ avgSteps <- aggregate(newData$steps,
                       list(interval = as.numeric(as.character(newData$interval)), 
                            weekdays = newData$weekdays),
                       FUN = "mean")
+```
+
+```
+## Error in newData$steps: object of type 'closure' is not subsettable
+```
+
+```r
 names(avgSteps)[3] <- "meanOfSteps"
+```
+
+```
+## Error in names(avgSteps)[3] <- "meanOfSteps": object 'avgSteps' not found
+```
+
+```r
 library(lattice)
 xyplot(avgSteps$meanOfSteps ~ avgSteps$interval | avgSteps$weekdays, 
        layout = c(1, 2), type = "l", 
        xlab = "Interval", ylab = "Number of steps")
 ```
 
-![plot of chunk unnamed-chunk-15](figure/unnamed-chunk-15-1.png) 
+```
+## Error in eval(expr, envir, enclos): object 'avgSteps' not found
+```
 

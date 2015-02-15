@@ -1,5 +1,5 @@
-Reproducible Research: Assignment 1
-===================================
+Reproducible Research: Peer Assessment 1
+========================================
 
 ### Basic settings
 ```{r}
